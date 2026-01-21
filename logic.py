@@ -41,7 +41,7 @@ def bar_chart ( x_col, y_col, title ='Bar chart', xlabel ='Category', ylabel = '
     bars = ax.bar(
     x_col, y_col,
     width = 0.4,
-    alpha = 0.6
+    alpha = 0.6,
 )
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
@@ -49,6 +49,7 @@ def bar_chart ( x_col, y_col, title ='Bar chart', xlabel ='Category', ylabel = '
     ax.grid(axis = 'y', linestyle ='--', alpha =0.5)
     ax.tick_params(axis = 'x', rotation = 45)
     ax.ticklabel_format(style ='plain', axis = 'y')
+    ax.legend(bars, x_col)
     ax.yaxis.set_major_formatter(mtick.StrMethodFormatter('{x:,.0f}'))
     if show_value:
         for bar in bars:
@@ -63,3 +64,25 @@ def bar_chart ( x_col, y_col, title ='Bar chart', xlabel ='Category', ylabel = '
             )
     plt.tight_layout()
     return fig
+
+def line_chart( x_col, y_col, title ='Line chart', xlabel ='Time', ylabel = 'Value', show_value = True):
+    fig, ax = plt.subplots(figsize = (10,6))
+    lines = ax.plot(
+        x_col , y_col,
+        marker ='o',
+        linestyle = '-', 
+    )
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_title(title)
+    ax.grid(axis = 'y', linestyle ='--', alpha =0.5)
+    ax.tick_params(axis = 'x', rotation = 45)
+    ax.ticklabel_format(style ='plain', axis = 'y')
+    
+    plt.tight_layout()
+    return fig
+
+def to_datetime(date_input):
+    if isinstance(date_input, dt.date):
+        return pd.to_datetime(date_input)
+    return pd.to_datetime(date_input, errors='coerce')

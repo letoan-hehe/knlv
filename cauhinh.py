@@ -120,10 +120,19 @@ def hien_thi_trang1():
         tong_sales = df_da_loc.groupby('Sub-Category')['Sales'].sum().reset_index()
         st.dataframe(tong_sales.style.format({'Sales' : '{:,.2f}'}), use_container_width=True)
     st.markdown('---')
+
     st.write('Bieu do phan tich')
+    col_char1, col_chart2 = st.columns(2)
     data_chart = df_da_loc.groupby('Category')['Sales'].sum().reset_index()
-    fig = logic.bar_chart(data_chart['Category'], data_chart['Sales'])
-    st.pyplot(fig)
+    df_da_loc['Order Date'] = logic.to_datetime(df_da_loc['Order Date'])
+    data_line = df_da_loc.set_index('Order Date').resample('M')['Sales'].sum().reset_index()
+    with col_char1:
+        fig = logic.bar_chart(data_chart['Category'], data_chart['Sales'])
+        st.pyplot(fig)
+    with col_chart2:
+        fig2 = logic.line_chart(data_line['Order Date'],data_line['Sales'])
+    
+        st.pyplot(fig2)
 def trang_2():
     df = st.session_state['df_dulieu']
     with st.sidebar:
