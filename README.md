@@ -22,7 +22,7 @@
 * **Thư viện phân tích:** Pandas, NumPy.
 * **Trực quan hóa:** Matplotlib (DPI 600 cho chất lượng hình ảnh sắc nét).
 * **Giao diện:** Streamlit.
-* **Kỹ thuật tối ưu:** Sử dụng `@st.cache_data` để xử lý mượt mà dữ liệu lớn và Regex để tăng tính ổn định của hệ thống.
+* **Kỹ thuật tối ưu:** Sử dụngRegex để tăng tính ổn định của hệ thống.
 
 ## 📂 Cấu trúc dự án
 
