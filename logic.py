@@ -37,7 +37,7 @@ def reset_day():
         st.session_state['end_date'] = max_day(df,'Order Date')
 
 def bar_chart ( x_col, y_col, title ='Bar chart', xlabel ='Category', ylabel = 'Value', show_value = True):
-    fig, ax = plt.subplots(figsize = (10,6))
+    fig, ax = plt.subplots(figsize = (10,6),dpi=600)
     bars = ax.bar(
     x_col, y_col,
     width = 0.4,
@@ -66,7 +66,7 @@ def bar_chart ( x_col, y_col, title ='Bar chart', xlabel ='Category', ylabel = '
     return fig
 
 def line_chart( x_col, y_col, title ='Line chart', xlabel ='Time', ylabel = 'Value', show_value = True):
-    fig, ax = plt.subplots(figsize = (10,6))
+    fig, ax = plt.subplots(figsize = (10,6), dpi=600)
     lines = ax.plot(
         x_col , y_col,
         marker ='o',
@@ -86,3 +86,28 @@ def to_datetime(date_input):
     if isinstance(date_input, dt.date):
         return pd.to_datetime(date_input)
     return pd.to_datetime(date_input, errors='coerce')
+
+def bar_chart_2 ( x_col, y_col, title =None, xlabel ='Doanh so', ylabel = 'Danh muc', show_value = True):
+    fig, ax = plt.subplots(figsize = (10,6), dpi=600)
+    bars = ax.barh(
+    x_col, y_col,
+    height = 0.4,
+    alpha = 0.6,
+)
+    if not y_col.empty:
+        max_val = y_col.max()
+        ax.set_xlim(0, max_val * 1.2)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_title(title)
+    ax.tick_params(axis = 'x', rotation = 0)
+    ax.xaxis.set_major_formatter(mtick.StrMethodFormatter('{x:,.0f}'))
+    if show_value:
+        for bar in bars:
+            width = bar.get_width()
+            ax.text(width, bar.get_y() + bar.get_height()/2, 
+                    f' {width:,.0f}', va='center', fontsize=9)
+    ax.legend(bars, x_col)
+    ax.invert_yaxis()
+    plt.tight_layout()
+    return fig

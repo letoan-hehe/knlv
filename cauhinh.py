@@ -51,32 +51,32 @@ def hien_thi_trang1():
         st.header('Công cụ phân tích')
         st.success(f'File hợp lệ')
         st.button('Đặt lại ngày', on_click= logic.reset_day)
-        
-        # Slider chọn ngày
-        col1, col2 = st.columns(2)
-        with col1:
-            start_str = st.date_input(
-                "Từ ngày"
-                ,min_value=logic.min_day(df,'Order Date')
-                ,max_value = logic.max_day(df,'Order Date')
-                ,format="DD/MM/YYYY"
-                ,key='start_date' ) # Format hiển thị
-        with col2:
-            end_str = st.date_input(
-                "Đến ngày"
-                ,min_value=logic.min_day(df,'Order Date')
-                ,max_value = logic.max_day(df,'Order Date')
-                ,format="DD/MM/YYYY"
-                ,key='end_date') 
-        # Chọn bang và thành phố
-        col3, col4 = st.columns([1,1])
-        with col3:
-            state = logic.pick_state(df,'State')
-            selected_state = st.multiselect('Chọn bang', state, default = None)
-        with col4:
-            city = logic.pick_city(df,'City','State',selected_state)
-            selected_city = st.multiselect('Chọn thành phố', city, default = None)
-            
+        with st.expander(" Bộ lọc Thời gian", expanded=True):
+            col1, col2 = st.columns(2)
+            with col1:
+                start_str = st.date_input(
+                    "Từ ngày"
+                    ,min_value=logic.min_day(df,'Order Date')
+                    ,max_value = logic.max_day(df,'Order Date')
+                    ,format="DD/MM/YYYY"
+                    ,key='start_date' ) # Format hiển thị
+            with col2:
+                end_str = st.date_input(
+                    "Đến ngày"
+                    ,min_value=logic.min_day(df,'Order Date')
+                    ,max_value = logic.max_day(df,'Order Date')
+                    ,format="DD/MM/YYYY"
+                    ,key='end_date') 
+        with st.expander(" Bộ lọc Khu vực", expanded=False):
+            # Chọn bang và thành phố
+            col3, col4 = st.columns([1,1])
+            with col3:
+                state = logic.pick_state(df,'State')
+                selected_state = st.multiselect('Chọn bang', state, default = None)
+            with col4:
+                city = logic.pick_city(df,'City','State',selected_state)
+                selected_city = st.multiselect('Chọn thành phố', city, default = None)
+                
         st.markdown('---')
         # chọn file khác
         if st.button('Tải file khác'):
@@ -95,7 +95,9 @@ def hien_thi_trang1():
     except KeyError as e:
         st.error(f"File CSV thiếu cột dữ liệu cần thiết: {e}")
         return
-
+    if df_da_loc.empty:
+        st.warning("Không có dữ liệu phù hợp với bộ lọc hiện tại. Vui lòng chọn lại!")
+        return
     # 3. Hiển thị KPI Cards
     col_kpi1, col_kpi2, col_kpi3 = st.columns(3)
     with col_kpi1:
@@ -131,8 +133,18 @@ def hien_thi_trang1():
         st.pyplot(fig)
     with col_chart2:
         fig2 = logic.line_chart(data_line['Order Date'],data_line['Sales'])
-    
         st.pyplot(fig2)
+    
+    col_chart3, col_chart4 = st.columns(2)
+    data_chart1  = df_da_loc.groupby('Sub-Category')['Sales'].sum().reset_index()
+    sorted_data_top = data_chart1.sort_values(by='Sales', ascending = False).head(5)
+    sorted_data_bot = data_chart1.sort_values(by='Sales', ascending = True).head(5)
+    with col_chart3:
+        fig3 = logic.bar_chart_2(sorted_data_top['Sub-Category'], sorted_data_top['Sales'],title ='Top 5 Products good')
+        st.pyplot(fig3)
+    with col_chart4:
+        fig4 = logic.bar_chart_2(sorted_data_bot['Sub-Category'], sorted_data_bot['Sales'],title ='Top 5 Products bad')
+        st.pyplot(fig4)
 def trang_2():
     df = st.session_state['df_dulieu']
     with st.sidebar:
