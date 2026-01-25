@@ -3,6 +3,7 @@ import streamlit as st
 import datetime as dt
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
+import re
 def max_day (df, date_col):
     date_series = pd.to_datetime (df[date_col], errors = 'coerce')
     return date_series.max().date()
@@ -36,12 +37,13 @@ def reset_day():
         st.session_state['start_date'] = min_day(df,'Order Date')
         st.session_state['end_date'] = max_day(df,'Order Date')
 
-def bar_chart ( x_col, y_col, title ='Bar chart', xlabel ='Category', ylabel = 'Value', show_value = True):
+def bar_chart ( x_col, y_col, title ='Bar chart', xlabel ='Danh mục', ylabel = 'Doanh số', show_value = True):
     fig, ax = plt.subplots(figsize = (10,6),dpi=600)
     bars = ax.bar(
     x_col, y_col,
     width = 0.4,
-    alpha = 0.6,
+    alpha = 0.8,
+    
 )
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
@@ -65,7 +67,7 @@ def bar_chart ( x_col, y_col, title ='Bar chart', xlabel ='Category', ylabel = '
     plt.tight_layout()
     return fig
 
-def line_chart( x_col, y_col, title ='Line chart', xlabel ='Time', ylabel = 'Value', show_value = True):
+def line_chart( x_col, y_col, title ='Line chart', xlabel ='Thời gian', ylabel = 'Doanh số', show_value = True):
     fig, ax = plt.subplots(figsize = (10,6), dpi=600)
     lines = ax.plot(
         x_col , y_col,
@@ -75,7 +77,7 @@ def line_chart( x_col, y_col, title ='Line chart', xlabel ='Time', ylabel = 'Val
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.set_title(title)
-    ax.grid(axis = 'y', linestyle ='--', alpha =0.5)
+    ax.grid(axis = 'y', linestyle ='--', alpha =0.8)
     ax.tick_params(axis = 'x', rotation = 45)
     ax.ticklabel_format(style ='plain', axis = 'y')
     
@@ -87,12 +89,13 @@ def to_datetime(date_input):
         return pd.to_datetime(date_input)
     return pd.to_datetime(date_input, errors='coerce')
 
-def bar_chart_2 ( x_col, y_col, title =None, xlabel ='Doanh so', ylabel = 'Danh muc', show_value = True):
+def bar_chart_2 ( x_col, y_col, title =None, xlabel ='Doanh số', ylabel = 'Danh mục', show_value = True, color =None):
     fig, ax = plt.subplots(figsize = (10,6), dpi=600)
     bars = ax.barh(
     x_col, y_col,
     height = 0.4,
-    alpha = 0.6,
+    alpha = 0.8,
+    color = color
 )
     if not y_col.empty:
         max_val = y_col.max()
@@ -111,3 +114,11 @@ def bar_chart_2 ( x_col, y_col, title =None, xlabel ='Doanh so', ylabel = 'Danh 
     ax.invert_yaxis()
     plt.tight_layout()
     return fig
+
+def find_cloumns(df, patterns):
+    for pattern in patterns:
+        for col in df:
+            clean_col = col.lower().strip()
+            if re.search(pattern, clean_col, re.IGNORECASE):
+                return col
+    return None
