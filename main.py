@@ -15,7 +15,6 @@ if 'trang_hien_tai' not in st.session_state:
         st.session_state['trang_hien_tai'] = None
 if st.session_state['df_dulieu'] is None:
     cauhinh.hien_thi_man_hinh_cho()
-
 else:
     if st.session_state['trang_hien_tai'] is None or st.session_state['trang_hien_tai'] =='trang_1':
         st.session_state['trang_hien_tai'] ='trang_1'
