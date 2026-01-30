@@ -163,8 +163,8 @@ def bar_chart_2(x_col, y_col, title=None, xlabel='Giá trị', ylabel='Danh mụ
 def pie_chart(x_col, y_col, title='Pie chart'):
     if len(y_col) > 10:
         df_temp = pd.DataFrame({'label': x_col, 'value': y_col})
-        df_head = df_temp.head(10)
-        other_val = df_temp['value'][10:].sum()
+        df_head = df_temp.head(5)
+        other_val = df_temp['value'][5:].sum()
         new_row = pd.DataFrame([{'label': 'Khác', 'value': other_val}])
         df_plot = pd.concat([df_head, new_row], ignore_index=True)
         labels = df_plot['label']

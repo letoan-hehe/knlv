@@ -485,7 +485,7 @@ def trang_2():
             return
 
         # 2. Vẽ Biểu đồ (GỌI HÀM TỪ LOGIC - Rất ngắn gọn)
-        st.subheader(f"📈 Biểu đồ {chart_type}")
+        st.subheader(f"📊 Biểu đồ {chart_type}")
         
         if "Column" in chart_type:
             fig = logic.bar_chart(
