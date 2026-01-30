@@ -368,7 +368,7 @@ def trang_2():
         st.warning("⚠ Chưa có dữ liệu. Vui lòng quay lại Trang 1 để tải file lên.")
         return
 
-    # ================= ÁP DỤNG BỘ LỌC (Giữ nguyên logic của bạn) =================
+    # ================= ÁP DỤNG BỘ LỌC =================
     start_date = st.session_state.get('start_date')
     end_date = st.session_state.get('end_date')
     khu_vuc = st.session_state.get('chon_khu_vuc', []) 

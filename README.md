@@ -1,37 +1,87 @@
-# 🛒 Retail Sales Analysis Tool (Dành cho Cửa hàng Bán lẻ)
+# 🛒 Retail Sales Analysis Tool 
 
-Đây là một ứng dụng Dashboard thông minh được xây dựng bằng **Python** và **Streamlit**, giúp các chủ cửa hàng bán lẻ nhanh chóng phân tích tình hình kinh doanh từ file dữ liệu CSV. Ứng dụng tập trung vào tính đơn giản, trực quan và tự động hóa.
+Retail Sales Analysis Tool là một ứng dụng Dashboard chuyên sâu được phát triển bằng Python và Streamlit. Công cụ này giúp các nhà quản lý và chủ cửa hàng bán lẻ biến các file dữ liệu CSV thô thành những thông tin chi tiết (insights) về doanh thu, lợi nhuận và hiệu suất sản phẩm chỉ trong vài giây.
 
 ## 🌟 Tính năng chính
 
-* **Tải dữ liệu linh hoạt:** Hỗ trợ kéo thả file CSV. Hệ thống tự động xử lý và chuyển hướng đến trang Dashboard sau khi tải thành công.
-* **Bộ lọc thông minh:**
-    * Lọc theo thời gian (Khoảng ngày tùy chỉnh).
-    * Lọc đa tầng theo **Khu vực (State)** và **Thành phố (City)**. Danh sách thành phố sẽ tự động cập nhật dựa trên khu vực được chọn.
-* **Phân tích doanh số đa chiều:**
-    * Biểu đồ cột phân tích doanh thu theo từng **Danh mục sản phẩm (Category)**.
-    * Biểu đồ đường theo dõi xu hướng doanh thu theo thời gian (**M-Resample**).
-* **Nhận diện Top/Bottom Performance:**
-    * Tự động liệt kê **Top 5** sản phẩm bán chạy nhất (màu xanh).
-    * Tự động liệt kê **Top 5** sản phẩm bán chậm nhất (màu đỏ) để chủ cửa hàng có kế hoạch xả kho hoặc điều chỉnh.
-* **Xử lý dữ liệu tự động (Regex):** Hệ thống tự động nhận diện tên cột (Doanh số, Loại hàng, Ngày...) ngay cả khi tên cột trong file CSV bị thay đổi hoặc viết sai.
+### 1. Quản lý dữ liệu linh hoạt
 
-## 🛠 Công nghệ sử dụng
+- **Hỗ trợ đa nguồn**: Cho phép tải file CSV trực tiếp hoặc sử dụng Dữ liệu mẫu (15 dòng) tích hợp sẵn để trải nghiệm nhanh các tính năng.
+- **Kiểm tra tính hợp lệ**: Tự động kiểm tra các cột bắt buộc như: Ngày đặt hàng, Sản phẩm, Doanh thu, Lợi nhuận, Khu vực, Tỉnh....
+- **Xử lý thông minh**: Tự động làm sạch tên cột (strip spaces) và nhận diện định dạng ngày tháng tiếng Việt.
 
-* **Ngôn ngữ:** Python
-* **Thư viện phân tích:** Pandas, NumPy.
-* **Trực quan hóa:** Matplotlib (DPI 600 cho chất lượng hình ảnh sắc nét).
-* **Giao diện:** Streamlit.
-* **Kỹ thuật tối ưu:** Sử dụngRegex để tăng tính ổn định của hệ thống.
+### 2. Dashboard Tổng quan (Trang 1)
+
+- **Hệ thống KPI Cards**: Theo dõi 3 chỉ số sinh tử: Tổng doanh thu, Tổng lợi nhuận và Tổng số đơn hàng.
+- **So sánh tăng trưởng (Delta)**: Tự động tính toán và hiển thị % tăng trưởng so với tháng trước đó, giúp nhận diện xu hướng kinh doanh ngay lập tức.
+- **Phân tích Top/Bottom**:
+  - Top 5 sản phẩm bán chạy: Hiển thị với sắc xanh (Greens) tượng trưng cho hiệu suất tốt.
+  - Top 5 sản phẩm bán kém: Hiển thị với sắc đỏ (Reds) để cảnh báo về tồn kho hoặc sản phẩm lỗi thời.
+- **Xu hướng thời gian**: Biểu đồ đường (Line Chart) theo dõi biến động doanh số theo từng tháng.
+
+### 3. Phân tích Tùy chỉnh (Trang 2)
+
+- **Self-Service BI**: Người dùng có quyền tự chọn Trục X (Cột phân loại) và Trục Y (Chỉ số số học) để tạo biểu đồ theo ý muốn.
+- **Đa dạng phép toán**: Hỗ trợ Tổng (Sum), Trung bình (Mean), Lớn nhất (Max), Nhỏ nhất (Min) và Đếm (Count).
+- **Linh hoạt loại hình**: Chuyển đổi giữa biểu đồ Cột đứng, Đường và biểu đồ Tròn (Donut chart).
 
 ## 📂 Cấu trúc dự án
 
-* `main.py`: Quản lý cấu hình trang và điều hướng luồng ứng dụng.
-* `cauhinh.py`: Thiết kế giao diện Dashboard, các Widget lọc và bố cục biểu đồ.
-* `logic.py`: Chứa toàn bộ các hàm xử lý dữ liệu, bộ lọc và các hàm vẽ biểu đồ chuyên sâu.
+```
+retail-sales-analysis-tool/
+├── main.py       # Điểm khởi đầu của ứng dụng
+├── cauhinh.py    # Giao diện người dùng (UI)
+├── logic.py      # Xử lý dữ liệu và vẽ biểu đồ
+└── README.md     # Tài liệu hướng dẫn
+```
 
-## 🚀 Cách chạy ứng dụng
+- **main.py**: Điểm khởi đầu của ứng dụng. Quản lý cấu hình trang (set_page_config), khởi tạo session_state và điều phối luồng giữa màn hình chờ và các trang dashboard.
+- **cauhinh.py**: Chứa toàn bộ giao diện người dùng (UI). Định nghĩa cấu trúc các cột, widget lọc, các hàm hiển thị Metric và bố cục của Trang 1 & Trang 2.
+- **logic.py**: Thư viện chứa các hàm xử lý dữ liệu và vẽ biểu đồ. Bao gồm các hàm lọc dữ liệu (filter_data), định dạng tiền tệ thông minh (smart_format) và các hàm Matplotlib tùy biến.
 
-1. Cài đặt các thư viện cần thiết:
-   ```bash
-   pip install streamlit pandas matplotlib
+## 🛠 Công nghệ sử dụng
+
+- **Ngôn ngữ**: Python 3.x
+- **Thư viện Dashboard**: Streamlit
+- **Xử lý dữ liệu**: Pandas
+- **Trực quan hóa**: Matplotlib (Tối ưu hiển thị với định dạng số rút gọn K, M, B)
+
+## 🚀 Hướng dẫn cài đặt và sử dụng
+
+### 1. Cài đặt môi trường
+
+Yêu cầu Python đã được cài đặt. Chạy lệnh sau để cài đặt các thư viện bổ trợ:
+
+```bash
+pip install streamlit pandas matplotlib
+```
+
+### 2. Khởi chạy ứng dụng
+
+Di chuyển vào thư mục dự án và chạy:
+
+```bash
+streamlit run main.py
+```
+
+### 3. Chuẩn bị dữ liệu CSV
+
+Để Dashboard hoạt động đầy đủ tính năng, file CSV của bạn nên có các tiêu đề cột sau:
+
+| Cột | Mô tả |
+|-----|-------|
+| Ngày đặt hàng | Định dạng ngày (DD/MM/YYYY) |
+| Sản phẩm | Tên mặt hàng |
+| Doanh thu | Giá trị số |
+| Lợi nhuận | Giá trị số |
+| Khu vực | Miền Bắc, Miền Trung, Miền Nam... |
+| Tỉnh | Tên tỉnh/thành phố |
+
+## 💡 Lưu ý vận hành
+
+- Hệ thống sẽ tự động **Reset các bộ lọc** (Ngày, Khu vực, Tỉnh) mỗi khi bạn tải một file dữ liệu mới để đảm bảo tính chính xác của biểu đồ.
+- Nếu file tải lên thiếu các cột chuẩn, ứng dụng sẽ đưa ra cảnh báo nhưng bạn vẫn có thể sử dụng Trang 2 để phân tích các cột dữ liệu hiện có.
+
+---
+
+**Phát triển bởi**: Fruits Team  
