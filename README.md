@@ -80,7 +80,6 @@ streamlit run main.py
 ## 💡 Lưu ý vận hành
 
 - Hệ thống sẽ tự động **Reset các bộ lọc** (Ngày, Khu vực, Tỉnh) mỗi khi bạn tải một file dữ liệu mới để đảm bảo tính chính xác của biểu đồ.
-- Nếu file tải lên thiếu các cột chuẩn, ứng dụng sẽ đưa ra cảnh báo nhưng bạn vẫn có thể sử dụng Trang 2 để phân tích các cột dữ liệu hiện có.
 
 ---
 
