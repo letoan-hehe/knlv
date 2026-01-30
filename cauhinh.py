@@ -158,10 +158,10 @@ def hien_thi_dashboard():
             st.session_state['df_dulieu'] = None
             st.rerun()
         
-        # if 'start_date' not in st.session_state:
-        #     st.session_state['start_date'] = logic.min_day(df, 'Ngày đặt hàng')
-        # if 'end_date' not in st.session_state:
-        #     st.session_state['end_date'] = logic.max_day(df, 'Ngày đặt hàng')
+        if 'start_date' not in st.session_state:
+            st.session_state['start_date'] = logic.min_day(df, 'Ngày đặt hàng')
+        if 'end_date' not in st.session_state:
+            st.session_state['end_date'] = logic.max_day(df, 'Ngày đặt hàng')
         if 'start_date_widget' not in st.session_state:
             st.session_state['start_date_widget'] = st.session_state['start_date']
 
@@ -183,13 +183,13 @@ def hien_thi_dashboard():
                 col1, col2 = st.columns(2)
                 with col1:
                     start_str = st.date_input("Từ ngày",
-                        value=d_min,
+                        # value=d_min,
                         min_value=d_min,
                         max_value=d_max,
                         format="DD/MM/YYYY", key='start_date_widget')
                 with col2:
                     end_str = st.date_input("Đến ngày",
-                        value=d_min,
+                        # value=d_min,
                         min_value=d_min,
                         max_value=d_max,
                         format="DD/MM/YYYY", key='end_date_widget') 
