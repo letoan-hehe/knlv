@@ -7,10 +7,14 @@ import matplotlib.ticker as mtick
 # --- CÁC HÀM XỬ LÝ DỮ LIỆU ---
 def max_day(df, date_col):
     date_series = pd.to_datetime(df[date_col], errors='coerce')
+    if date_series.empty:
+        return dt.date.today()
     return date_series.max().date()
 
 def min_day(df, date_col):
     date_series = pd.to_datetime(df[date_col], errors='coerce')
+    if date_series.empty:
+        return dt.date.today()
     return date_series.min().date()
 
 def filter_data(df, date_col, start_date, end_date, state_col, selected_state, city_col, selected_city):
@@ -32,8 +36,15 @@ def reset_day():
     if 'df_dulieu' in st.session_state and st.session_state['df_dulieu'] is not None:
         df = st.session_state['df_dulieu']
         if 'Ngày đặt hàng' in df.columns:
-            st.session_state['start_date'] = min_day(df, 'Ngày đặt hàng')
-            st.session_state['end_date'] = max_day(df, 'Ngày đặt hàng')
+            default_start = min_day(df, 'Ngày đặt hàng')
+            default_end   = max_day(df, 'Ngày đặt hàng')
+            
+            st.session_state['start_date'] = default_start
+            st.session_state['end_date']   = default_end
+            
+            # Buộc widget cập nhật lại
+            st.session_state['start_date_widget'] = default_start
+            st.session_state['end_date_widget']   = default_end
 
 def to_datetime(date_input):
     if isinstance(date_input, dt.date):

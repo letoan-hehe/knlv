@@ -125,17 +125,19 @@ def hien_thi_man_hinh_cho():
                 try:
                     df = pd.read_csv(uploaded_file, sep=None, engine="python", encoding="utf-8-sig")
                     df.columns = df.columns.str.strip()
-
-                    missing_cols = kiem_tra_cot_bat_buoc(df)
+                    if 'Ngày đặt hàng' in df.columns:
+                        df['Ngày đặt hàng'] = pd.to_datetime(df['Ngày đặt hàng'], dayfirst=True, errors='coerce')
+                        df = df.dropna(subset=['Ngày đặt hàng']) # Loại bỏ dòng không có ngày để tránh lỗi .max()
+                        missing_cols = kiem_tra_cot_bat_buoc(df)
                     st.session_state['df_dulieu'] = df
                     
                     if missing_cols:
                         st.warning(f"⚠ File thiếu cột chuẩn: {', '.join(missing_cols)}")
-                        st.info("👉 Bạn vẫn có thể dùng **Trang 2** để phân tích.")
-                        st.session_state['is_standard_file'] = False
+                        st.session_state['df_dulieu'] = None
+                        st.stop()
                     else:
-                        st.success('✅ File hợp lệ! Full tính năng.')
-                        st.session_state['is_standard_file'] = True
+                        st.success('✅ File hợp lệ!')
+                        st.session_state['df_dulieu'] = df
                     
                     # --- CŨNG RESET KHI UPLOAD MỚI ---
                     clear_filters()
@@ -156,26 +158,41 @@ def hien_thi_dashboard():
             st.session_state['df_dulieu'] = None
             st.rerun()
         
-        if 'start_date' not in st.session_state:
-            st.session_state['start_date'] = logic.min_day(df, 'Ngày đặt hàng')
-        if 'end_date' not in st.session_state:
-            st.session_state['end_date'] = logic.max_day(df, 'Ngày đặt hàng')
-        
+        # if 'start_date' not in st.session_state:
+        #     st.session_state['start_date'] = logic.min_day(df, 'Ngày đặt hàng')
+        # if 'end_date' not in st.session_state:
+        #     st.session_state['end_date'] = logic.max_day(df, 'Ngày đặt hàng')
+        if 'start_date_widget' not in st.session_state:
+            st.session_state['start_date_widget'] = st.session_state['start_date']
+
+        if 'end_date_widget' not in st.session_state:
+            st.session_state['end_date_widget'] = st.session_state['end_date']
+                
     with st.sidebar:
             st.header('Công cụ phân tích')
             st.button('Đặt lại ngày', on_click= logic.reset_day)
+            d_min = logic.min_day(df, 'Ngày đặt hàng')
+            d_max = logic.max_day(df, 'Ngày đặt hàng')
+
+            # Đảm bảo session_state cũng lưu trữ đúng kiểu date, không lưu NaT
+            if 'start_date' not in st.session_state or pd.isna(st.session_state['start_date']):
+                st.session_state['start_date'] = d_min
+            if 'end_date' not in st.session_state or pd.isna(st.session_state['end_date']):
+                st.session_state['end_date'] = d_max
             with st.expander(" Bộ lọc Thời gian", expanded=True):
                 col1, col2 = st.columns(2)
                 with col1:
                     start_str = st.date_input("Từ ngày",
-                        min_value=logic.min_day(df,'Ngày đặt hàng'),
-                        max_value=logic.max_day(df,'Ngày đặt hàng'),
-                        format="DD/MM/YYYY", key='start_date')
+                        value=d_min,
+                        min_value=d_min,
+                        max_value=d_max,
+                        format="DD/MM/YYYY", key='start_date_widget')
                 with col2:
                     end_str = st.date_input("Đến ngày",
-                        min_value=logic.min_day(df,'Ngày đặt hàng'),
-                        max_value=logic.max_day(df,'Ngày đặt hàng'),
-                        format="DD/MM/YYYY", key='end_date') 
+                        value=d_min,
+                        min_value=d_min,
+                        max_value=d_max,
+                        format="DD/MM/YYYY", key='end_date_widget') 
             
             with st.expander(" Bộ lọc Khu vực", expanded=False):
                 col3, col4 = st.columns([1,1])
@@ -211,11 +228,16 @@ def hien_thi_dashboard():
 
             # 2. XÁC ĐỊNH THÁNG CUỐI CÙNG TRONG DỮ LIỆU (Thực tế)
             # Lấy ngày lớn nhất trong tập dữ liệu đang lọc (ví dụ: data mẫu có tháng 1,2,3,4 -> lấy tháng 4)
-            last_date_in_data = df_da_loc['Ngày đặt hàng'].max()
-            
-            curr_month = last_date_in_data.month
-            curr_year = last_date_in_data.year
-            
+            if not df_da_loc.empty:
+                last_date_in_data = df_da_loc['Ngày đặt hàng'].max()
+                curr_month = last_date_in_data.month
+                curr_year = last_date_in_data.year
+            else:
+                # Nếu bộ lọc làm dữ liệu trống, ta lấy tháng/năm lớn nhất từ dữ liệu gốc (df)
+                # để các thẻ KPI vẫn hiển thị đúng bối cảnh thời gian của file.
+                last_date_original = df['Ngày đặt hàng'].max()
+                curr_month = last_date_original.month
+                curr_year = last_date_original.year
             # Tính tháng trước đó
             if curr_month == 1:
                 prev_month = 12
@@ -369,8 +391,8 @@ def trang_2():
         return
 
     # ================= ÁP DỤNG BỘ LỌC =================
-    start_date = st.session_state.get('start_date')
-    end_date = st.session_state.get('end_date')
+    start_date = st.session_state.get('start_date_widget')
+    end_date = st.session_state.get('end_date_widget')
     khu_vuc = st.session_state.get('chon_khu_vuc', []) 
     tinh = st.session_state.get('chon_tinh', [])      
 
@@ -456,7 +478,7 @@ def trang_2():
             df_plot = df_grouped.copy()
             if chart_type in ["Column (Cột)", "Line (Đường)"] and len(df_plot) > 30:
                 st.caption(f"ℹ Hiển thị Top 15/{len(df_plot)} nhóm lớn nhất.")
-                df_plot = df_plot.head()
+                df_plot = df_plot.head(15)
 
         except Exception as e:
             st.error(f"Lỗi xử lý dữ liệu: {e}")
