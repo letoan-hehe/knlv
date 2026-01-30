@@ -8,6 +8,13 @@ st.set_page_config(
     layout= 'wide',
     initial_sidebar_state= 'expanded'
 )
+st.markdown("""
+    <style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    </style>
+    """, unsafe_allow_html=True)
 # Neu khong co du lieu thi se o trang loading
 if 'df_dulieu' not in st.session_state:
     st.session_state['df_dulieu'] = None
