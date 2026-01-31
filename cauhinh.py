@@ -123,30 +123,34 @@ def hien_thi_man_hinh_cho():
         if uploaded_file is not None:
             with st.spinner('Đang xử lý...'):
                 try:
-                    df = pd.read_csv(uploaded_file, sep=None, engine="python", encoding="utf-8-sig")
-                    df.columns = df.columns.str.strip()
-                    if 'Ngày đặt hàng' in df.columns:
-                        df['Ngày đặt hàng'] = pd.to_datetime(df['Ngày đặt hàng'], dayfirst=True, errors='coerce')
-                        df = df.dropna(subset=['Ngày đặt hàng']) # Loại bỏ dòng không có ngày để tránh lỗi .max()
-                        missing_cols = kiem_tra_cot_bat_buoc(df)
-                    st.session_state['df_dulieu'] = df
+                    # 1. Đọc dữ liệu tạm thời
+                    df_temp = pd.read_csv(uploaded_file, sep=None, engine="python", encoding="utf-8-sig")
+                    df_temp.columns = df_temp.columns.str.strip()
+                    
+                    # 2. Xử lý ngày tháng
+                    if 'Ngày đặt hàng' in df_temp.columns:
+                        df_temp['Ngày đặt hàng'] = pd.to_datetime(df_temp['Ngày đặt hàng'], dayfirst=True, errors='coerce')
+                        df_temp = df_temp.dropna(subset=['Ngày đặt hàng'])
+                    
+                    # 3. Kiểm tra cột
+                    missing_cols = kiem_tra_cot_bat_buoc(df_temp)
                     
                     if missing_cols:
-                        st.warning(f"⚠ File thiếu cột chuẩn: {', '.join(missing_cols)}")
-                        st.session_state['df_dulieu'] = None
-                        st.stop()
+                        # Hiển thị lỗi rõ ràng và KHÔNG lưu vào session_state
+                        st.error(f"❌ File không hợp lệ! Thiếu các cột: {', '.join(missing_cols)}")
+                        st.info("Vui lòng kiểm tra lại file CSV hoặc tải file mẫu bên trên.")
                     else:
-                        st.success('✅ File hợp lệ!')
-                        st.session_state['df_dulieu'] = df
-                    
-                    # --- CŨNG RESET KHI UPLOAD MỚI ---
-                    clear_filters()
-
-                    time.sleep(1)
-                    st.rerun()
+                        # 4. Nếu mọi thứ OK mới lưu vào session_state và chuyển trang
+                        st.session_state['df_dulieu'] = df_temp
+                        st.session_state['is_standard_file'] = True
+                        clear_filters()
+                        
+                        st.success('✅ File hợp lệ! Đang chuyển hướng...')
+                        time.sleep(1)
+                        st.rerun()
 
                 except Exception as e:
-                    st.error(f'File lỗi: {e}')
+                    st.error(f'Lỗi định dạng file: {e}')
 
 # Hiển thị das
 def hien_thi_dashboard():
