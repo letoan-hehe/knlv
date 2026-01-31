@@ -181,3 +181,22 @@ def pie_chart(x_col, y_col, title='Pie chart'):
     ax.set_title(title)
     plt.tight_layout()
     return fig
+
+def thong_bao_mau(noi_dung, mau_nen="#800080", mau_chu="#ffffff"):
+    st.markdown(
+        f"""
+        <div style="
+            padding: 15px;
+            border-radius: 10px;
+            background-color: {mau_nen};
+            color: {mau_chu};
+            font-weight: bold;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+            margin-bottom: 10px;
+        ">
+            {noi_dung}
+        </div>
+        """,
+        unsafe_allow_html=True
+    )

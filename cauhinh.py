@@ -155,6 +155,21 @@ def hien_thi_man_hinh_cho():
 # Hiển thị das
 def hien_thi_dashboard():
     df = st.session_state['df_dulieu']
+    df = st.session_state['df_dulieu']
+    
+    # --- BƯỚC CHUẨN BỊ (PHẢI CÓ CÁI NÀY THÌ MỚI HẾT LỖI) ---
+    df_cal = df.copy()
+    # Ép kiểu ngày tháng để tính toán danh sách tháng
+    df_cal['Ngày đặt hàng'] = pd.to_datetime(df_cal['Ngày đặt hàng'], dayfirst=True, errors='coerce')
+    df_cal = df_cal.dropna(subset=['Ngày đặt hàng'])
+    
+    # Tạo cột phụ để dễ so sánh
+    df_cal['Thang_Int'] = df_cal['Ngày đặt hàng'].dt.month.astype(int)
+    df_cal['Nam_Int'] = df_cal['Ngày đặt hàng'].dt.year.astype(int)
+    
+    # Đây chính là "danh_sach_thang" fen đang tìm:
+    # Lấy các cặp Năm-Tháng duy nhất và sắp xếp từ cũ đến mới
+    danh_sach_thang = df_cal[['Nam_Int', 'Thang_Int']].drop_duplicates().sort_values(['Nam_Int', 'Thang_Int']).values.tolist()
     with st.sidebar:
         st.title('🏠 Menu Hệ thống')
         trang = st.radio('Chon trang',options=['Trang 1','Trang 2'], index= 0,key="navigation_radio")
@@ -212,109 +227,72 @@ def hien_thi_dashboard():
                     selected_tinh = st.multiselect('Chọn tỉnh', tinh_list,key='chon_tinh')
             st.markdown('---')
 
-    if trang =='Trang 1':
+    if trang == 'Trang 1':
         st.title('📊 Dashboard Tổng quan kinh doanh')
         
         # --- LỌC DỮ LIỆU HIỂN THỊ (THEO BỘ LỌC) ---
-        df_da_loc = logic.filter_data(df, 'Ngày đặt hàng',start_str,end_str,
-                                      'Khu vực',selected_khu_vuc, 'Tỉnh',selected_tinh)
+        df_da_loc = logic.filter_data(df, 'Ngày đặt hàng', start_str, end_str,
+                                      'Khu vực', selected_khu_vuc, 'Tỉnh', selected_tinh)
         
         if df_da_loc.empty:
             st.warning("Không có dữ liệu phù hợp với bộ lọc hiện tại. Vui lòng chọn lại!")
             return
 
-        # ================= TÍNH TOÁN METRIC (THÁNG CUỐI DATA vs THÁNG LIỀN KỀ) =================
+        # ================= TÍNH TOÁN METRIC (FIX LỖI TĂNG TRƯỞNG 4000%) =================
         try:
-            # 1. Tính TỔNG (Dựa trên dữ liệu đã lọc)
-            tong_doanh_thu = df_da_loc['Doanh thu'].sum()
-            tong_loi_nhuan = df_da_loc['Lợi nhuận'].sum()
-            tong_so_don = len(df_da_loc)
+            # A. Con số chính: Tổng của toàn bộ vùng thời gian đang lọc (Ví dụ: Cả năm 2025)
+            tong_dt = df_da_loc['Doanh thu'].sum()
+            tong_ln = df_da_loc['Lợi nhuận'].sum()
+            tong_sd = len(df_da_loc)
 
-            # 2. XÁC ĐỊNH THÁNG CUỐI CÙNG TRONG DỮ LIỆU (Thực tế)
-            # Lấy ngày lớn nhất trong tập dữ liệu đang lọc (ví dụ: data mẫu có tháng 1,2,3,4 -> lấy tháng 4)
-            if not df_da_loc.empty:
-                last_date_in_data = df_da_loc['Ngày đặt hàng'].max()
-                curr_month = last_date_in_data.month
-                curr_year = last_date_in_data.year
-            else:
-                # Nếu bộ lọc làm dữ liệu trống, ta lấy tháng/năm lớn nhất từ dữ liệu gốc (df)
-                # để các thẻ KPI vẫn hiển thị đúng bối cảnh thời gian của file.
-                last_date_original = df['Ngày đặt hàng'].max()
-                curr_month = last_date_original.month
-                curr_year = last_date_original.year
-            # Tính tháng trước đó
-            if curr_month == 1:
-                prev_month = 12
-                prev_year = curr_year - 1
-            else:
-                prev_month = curr_month - 1
-                prev_year = curr_year
+            # B. Tính Delta: Chỉ so sánh Tháng cuối cùng trong vùng lọc với Tháng ngay trước đó
+            # Bước 1: Xác định tháng/năm mới nhất trong tập dữ liệu đã lọc
+            thang_cuoi = pd.to_datetime(df_da_loc['Ngày đặt hàng']).max()
+            curr_m, curr_y = thang_cuoi.month, thang_cuoi.year
 
-            # 3. CHUẨN BỊ DỮ LIỆU SO SÁNH (Lấy từ DF gốc nhưng áp dụng lọc Khu vực)
-            # Lý do: Nếu bạn lọc ngày từ 1/4 đến 30/4, thì df_da_loc không có tháng 3.
-            # Nên phải quay lại df gốc để lấy dữ liệu tháng 3.
-            df_cal = df.copy()
-            df_cal['Ngày đặt hàng'] = pd.to_datetime(df_cal['Ngày đặt hàng'], dayfirst=True, errors='coerce')
+            # Bước 2: Lấy giá trị của riêng tháng cuối đó để làm mốc "Hiện tại"
+            mask_curr = (df_da_loc['Ngày đặt hàng'].dt.month == curr_m) & (df_da_loc['Ngày đặt hàng'].dt.year == curr_y)
+            val_curr_dt = df_da_loc[mask_curr]['Doanh thu'].sum()
+            val_curr_ln = df_da_loc[mask_curr]['Lợi nhuận'].sum()
+            val_curr_sd = len(df_da_loc[mask_curr])
+
+            # Bước 3: Tìm tháng có dữ liệu ngay trước đó trong file gốc (df_cal)
+            # Chúng ta dùng df_cal đã chuẩn bị sẵn (đã ép kiểu datetime và lọc khu vực/tỉnh)
+            dt_p = ln_p = sd_p = 0
+            target = [curr_y, curr_m]
             
-            if selected_khu_vuc:
-                df_cal = df_cal[df_cal['Khu vực'].isin(selected_khu_vuc)]
-            if selected_tinh:
-                df_cal = df_cal[df_cal['Tỉnh'].isin(selected_tinh)]
-
-            # 4. Lọc ra 2 tháng cần so sánh
-            df_curr = df_cal[(df_cal['Ngày đặt hàng'].dt.month == curr_month) & (df_cal['Ngày đặt hàng'].dt.year == curr_year)]
-            df_prev = df_cal[(df_cal['Ngày đặt hàng'].dt.month == prev_month) & (df_cal['Ngày đặt hàng'].dt.year == prev_year)]
-
-            # 5. Tính chỉ số
-            dt_curr = df_curr['Doanh thu'].sum()
-            dt_prev = df_prev['Doanh thu'].sum()
+            if target in danh_sach_thang:
+                idx = danh_sach_thang.index(target)
+                if idx > 0:
+                    y_p, m_p = danh_sach_thang[idx-1]
+                    df_p = df_cal[(df_cal['Nam_Int'] == y_p) & (df_cal['Thang_Int'] == m_p)]
+                    
+                    # Tính toán mốc "Kỳ trước"
+                    dt_p = df_p['Doanh thu'].sum()
+                    ln_p = df_p['Lợi nhuận'].sum()
+                    sd_p = len(df_p)
+                    help_text = f"So sánh Tháng {curr_m}/{curr_y} vs Tháng {m_p}/{y_p}"
+                else:
+                    help_text = "Tháng đầu tiên của dữ liệu, không có kỳ trước để so sánh"
             
-            ln_curr = df_curr['Lợi nhuận'].sum()
-            ln_prev = df_prev['Lợi nhuận'].sum()
-            
-            sd_curr = len(df_curr)
-            sd_prev = len(df_prev)
-
-            # 6. Hàm Delta
-            def cal_delta(curr, prev):
-                if prev == 0:
-                    return "+100%" if curr > 0 else "0%"
-                diff = curr - prev
-                percent = (diff / prev) * 100
-                return f"{percent:+.1f}%"
+            # Hàm tính Delta an toàn
+            def cal_delta(c, p):
+                if p == 0: return "n/a"
+                return f"{((c - p) / p) * 100:+.1f}%"
 
         except Exception as e:
             st.error(f"Lỗi tính toán: {e}")
-            curr_month, prev_month, curr_year, prev_year = 0, 0, 0, 0
-            dt_curr, dt_prev = 0, 0
-            ln_curr, ln_prev = 0, 0
-            sd_curr, sd_prev = 0, 0
-
-        # HIỂN THỊ KPI CARDS
-        col_kpi1, col_kpi2, col_kpi3 = st.columns(3)
-        
-        with col_kpi1:
-            st.metric(
-                label="💰Tổng Doanh Thu💰", 
-                value=f"{logic.smart_format(tong_doanh_thu)} VND", 
-                delta=cal_delta(dt_curr, dt_prev),
-                help=f"So sánh Tháng {curr_month}/{curr_year} vs Tháng {prev_month}/{prev_year}"
-            )
-        with col_kpi2:
-            st.metric(
-                label="💹Tổng Lợi Nhuận💹", 
-                value=f"{logic.smart_format(tong_loi_nhuan)} VND",
-                delta=cal_delta(ln_curr, ln_prev),
-                help=f"So sánh Tháng {curr_month}/{curr_year} vs Tháng {prev_month}/{prev_year}"
-            )
-        with col_kpi3:
-            st.metric(
-                label="🧾Tổng Số đơn hàng🧾",
-                value=f"{tong_so_don:,} Đơn",
-                delta=cal_delta(sd_curr, sd_prev),
-                help=f"So sánh Tháng {curr_month}/{curr_year} vs Tháng {prev_month}/{prev_year}"
-            )
-        
+            dt_p = ln_p = sd_p = 0
+            help_text = "Lỗi định dạng dữ liệu"
+    # --- HIỂN THỊ KPI ---
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            st.metric("💰 Tổng Doanh Thu", f"{logic.smart_format(tong_dt)} VND", cal_delta(val_curr_dt, dt_p),help= help_text)
+        with c2:
+            st.metric("💹 Tổng Lợi Nhuận", f"{logic.smart_format(tong_ln)} VND", cal_delta(val_curr_ln, ln_p),help= help_text)
+        with c3:
+            st.metric("🧾 Tổng Đơn Hàng", f"{tong_sd:,} Đơn", cal_delta(val_curr_sd, sd_p),help= help_text)
+            
         st.write('---')
         st.subheader('📊Biểu đồ phân tích📊')
         col_char1, col_chart2 = st.columns(2)
