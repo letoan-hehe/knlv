@@ -17,32 +17,43 @@ st.set_page_config(
 #     </style>
 #     """, unsafe_allow_html=True)
 
+import streamlit as st
+
 st.markdown("""
     <style>
-    /* 1. Ẩn menu 3 gạch và nút GitHub/Deploy */
-    #MainMenu {visibility: hidden;}
-    header[data-testid="stHeader"] {
-        background-color: rgba(0,0,0,0); /* Làm trong suốt header */
-        height: 0px; /* Thu nhỏ độ cao để không đè lên nội dung */
-    }
-    
-    /* 2. Ẩn các icon bên phải của header nhưng GIỮ lại vùng chứa nút bên trái */
-    [data-testid="stHeaderActionElements"] {
-        visibility: hidden;
-    }
+        /* 1. Ẩn thanh Decoration (cái vạch màu cầu vồng trên cùng) */
+        [data-testid="stDecoration"] {
+            display: none;
+        }
 
-    /* 3. ĐÂY LÀ PHẦN QUAN TRỌNG: Cấu hình cho nút hiện lại sidebar */
-    /* Khi sidebar đóng, nút này nằm trong một div riêng, ta phải ép nó hiện lên */
-    [data-testid="sidebar-collapsed-control"] {
-        visibility: visible !important;
-        display: flex !important;
-        top: 10px; /* Điều chỉnh vị trí nút để không bị lệch */
-    }
+        /* 2. Ẩn nút Deploy (nếu có) */
+        .stDeployButton {
+            display: none;
+        }
 
-    /* 4. Ẩn footer */
-    footer {visibility: hidden;}
+        /* 3. Ẩn menu Hamburger (3 gạch) và các nút Toolbar bên phải */
+        [data-testid="stToolbar"] {
+            visibility: hidden !important;
+        }
+
+        /* 4. Ẩn Header nhưng vẫn giữ chỗ để nút Sidebar hoạt động */
+        header {
+            background-color: transparent !important;
+        }
+
+        /* 5. Ẩn Footer "Made with Streamlit" */
+        footer {
+            visibility: hidden !important;
+        }
+        
+        /* 6. Tinh chỉnh nút đóng/mở Sidebar (để nó không bị ẩn theo Header) */
+        /* Cái này quan trọng nếu bạn dùng Sidebar */
+        [data-testid="stSidebarCollapsedControl"] {
+            visibility: visible !important;
+            display: block !important;
+        }
     </style>
-    """, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 # Neu khong co du lieu thi se o trang loading
 if 'df_dulieu' not in st.session_state:
     st.session_state['df_dulieu'] = None
