@@ -308,7 +308,9 @@ def hien_thi_dashboard():
             fig = logic.bar_chart(
                 data_chart['Danh mục'], 
                 data_chart['Doanh thu'], 
-                color=colors_green
+                color=colors_green,
+                title= f'Biểu đồ doanh thu theo sản phẩm',
+                
             )
             st.pyplot(fig, use_container_width=True) # use_container_width để tự giãn
 
@@ -317,7 +319,7 @@ def hien_thi_dashboard():
         data_line = df_da_loc.set_index('Ngày đặt hàng').resample('M')['Doanh thu'].sum().reset_index()
 
         with col_chart2:
-            fig2 = logic.line_chart(data_line['Ngày đặt hàng'], data_line['Doanh thu'])
+            fig2 = logic.line_chart(data_line['Ngày đặt hàng'], data_line['Doanh thu'],title='Biểu đồ doanh thu theo thời gian')
             st.pyplot(fig2, use_container_width=True)
 
         # BIỂU ĐỒ 3 & 4
@@ -421,23 +423,32 @@ def trang_2():
         st.write("3️⃣ Phương thức thống kê:")
         agg_option = st.selectbox(
             "Chọn phương thức:",
-            ['Tổng (Sum)', 'Trung bình (Mean)', 'Lớn nhất (Max)', 'Nhỏ nhất (Min)', 'Đếm số lượng (Count)'],
+            ['Tổng', 'Trung Bình', 'Lớn nhất', 'Nhỏ nhất', 'Đếm số lượng'],
             label_visibility="collapsed"
         )
         
         agg_func_map = {
-            'Tổng (Sum)': 'sum',
-            'Trung bình (Mean)': 'mean',
-            'Lớn nhất (Max)': 'max',
-            'Nhỏ nhất (Min)': 'min',
-            'Đếm số lượng (Count)': 'count'
+            'Tổng': 'sum',
+            'Trung Bình': 'mean',
+            'Lớn nhất': 'max',
+            'Nhỏ nhất': 'min',
+            'Đếm số lượng': 'count'
         }
         selected_agg = agg_func_map[agg_option]
+        
+        y_tile_map = {
+            'Tổng': 'Doanh thu',
+            'Trung Bình': 'Doanh thu trung bình',
+            'Lớn nhất': 'Số lượng',
+            'Nhỏ nhất': 'Số lượng',
+            'Đếm số lượng': 'Số lượng'
+        }
+        selected_y_title  = y_tile_map[agg_option]
 
         st.divider()
         chart_type = st.radio(
             "4️⃣ Chọn loại biểu đồ:", 
-            ["Column (Cột)", "Line (Đường)", "Pie (Tròn)"]
+            ["Cột", "Đường", "Tròn"]
         )
 
     # ================= HIỂN THỊ =================
@@ -458,7 +469,7 @@ def trang_2():
             
             # Cắt giảm dữ liệu vẽ biểu đồ nếu quá nhiều (chỉ cho Bar/Line)
             df_plot = df_grouped.copy()
-            if chart_type in ["Column (Cột)", "Line (Đường)"] and len(df_plot) > 30:
+            if chart_type in ["Cột", "Đường"] and len(df_plot) > 30:
                 st.caption(f"ℹ Hiển thị Top 15/{len(df_plot)} nhóm lớn nhất.")
                 df_plot = df_plot.head(15)
 
@@ -469,29 +480,29 @@ def trang_2():
         # 2. Vẽ Biểu đồ (GỌI HÀM TỪ LOGIC - Rất ngắn gọn)
         st.subheader(f"📊 Biểu đồ {chart_type}")
         
-        if "Column" in chart_type:
+        if "Cột" in chart_type:
             fig = logic.bar_chart(
                 x_col=df_plot[col_phan_loai], 
                 y_col=df_plot['Giá trị'],
-                title=f"{agg_option} {col_gia_tri} theo {col_phan_loai}",
+                title=f" {col_gia_tri} theo {col_phan_loai}",
                 xlabel=col_phan_loai,
-                ylabel=agg_option,
+                ylabel=selected_y_title,
                 fmt=fmt # Truyền định dạng số vào
             )
             st.pyplot(fig)
 
-        elif "Line" in chart_type:
+        elif "Đường" in chart_type:
             fig = logic.line_chart(
                 x_col=df_plot[col_phan_loai], 
                 y_col=df_plot['Giá trị'],
-                title=f"{agg_option} {col_gia_tri} theo {col_phan_loai}",
+                title=f"{col_gia_tri} theo {col_phan_loai}",
                 xlabel=col_phan_loai,
-                ylabel=agg_option,
+                ylabel=selected_y_title,
                 fmt=fmt
             )
             st.pyplot(fig)
 
-        elif "Pie" in chart_type:
+        elif "Tròn" in chart_type:
             fig = logic.pie_chart(
                 x_col=df_grouped[col_phan_loai],
                 y_col=df_grouped['Giá trị'],
@@ -509,7 +520,7 @@ def trang_2():
             height=300
         )
         
-        csv_data = df_grouped.to_csv(index=False).encode('utf-8')
+        csv_data = df_grouped.to_csv(index=False).encode('utf-8-sig')
         st.download_button("📥 Tải kết quả (CSV)", csv_data, "ket_qua.csv", "text/csv")
 
     else:

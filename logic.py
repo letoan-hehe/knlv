@@ -58,11 +58,11 @@ def smart_format(value):
         return str(value)
     abs_val = abs(val)
     if abs_val >= 1_000_000_000:
-        return f'{val / 1_000_000_000:,.2f}B'
+        return f'{val / 1_000_000_000:,.1f} Tỷ'
     elif abs_val >= 1_000_000:
-        return f'{val / 1_000_000:,.2f}M'
+        return f'{val / 1_000_000:,.0f} Triệu'
     elif abs_val >= 1_000:
-        return f'{val / 1_000:,.1f}K'
+        return f'{val / 1_000:,.1f} Nghìn'
     else:
         return f'{val:,.0f}' if val % 1 == 0 else f'{val:,.2f}'
 
@@ -83,9 +83,7 @@ def aggregate_data(df, x_col, y_col, agg_type):
         df_res.rename(columns={y_col: 'Giá trị'}, inplace=True)
         fmt = '{:,.2f}'
     return df_res.sort_values(by='Giá trị', ascending=False), fmt
-
-# 2. Biểu đồ Cột đứng (Cập nhật: Thêm tham số color)
-def bar_chart(x_col, y_col, title='Bar chart', xlabel='Danh mục', ylabel='Giá trị', show_value=True, fmt=None, color='#1f77b4'):
+def bar_chart(x_col, y_col, title='Bar chart', xlabel='Danh mục', ylabel='Doanh thu', show_value=True, fmt=None, color='#1f77b4'):
     fig, ax = plt.subplots(figsize=(10, 6), dpi=100)
     # Sử dụng tham số color được truyền vào
     bars = ax.bar(x_col, y_col, width=0.5, alpha=0.8, color=color)
@@ -97,7 +95,7 @@ def bar_chart(x_col, y_col, title='Bar chart', xlabel='Danh mục', ylabel='Giá
     ax.set_ylabel(ylabel)
     ax.set_title(title)
     ax.grid(axis='y', linestyle='--', alpha=0.5)
-    ax.tick_params(axis='x', rotation=45)
+    ax.tick_params(axis='x', rotation=90)
     
     ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda x, pos: smart_format(x)))
 
@@ -106,16 +104,18 @@ def bar_chart(x_col, y_col, title='Bar chart', xlabel='Danh mục', ylabel='Giá
             height = bar.get_height()
             label = smart_format(height)
             xy_pos = (bar.get_x() + bar.get_width() / 2, height)
-            text_pos = (0, 5) if height >= 0 else (0, -15)
+            text_pos = (0, 10) if height >= 0 else (0, -15)
             va_align = 'bottom' if height >= 0 else 'top'
             
             ax.annotate(label, xy=xy_pos, xytext=text_pos, textcoords="offset points",
-                        ha='center', va=va_align, fontsize=9)
+                        ha='center', va=va_align, fontsize=8, rotation=90)
     plt.tight_layout()
     return fig
+# 2. Biểu đồ Cột đứng (Cập nhật: Thêm tham số color)
+
 
 # 3. Biểu đồ Đường
-def line_chart(x_col, y_col, title='Line chart', xlabel='Thời gian', ylabel='Giá trị', show_value=True, fmt=None):
+def line_chart(x_col, y_col, title='Line chart', xlabel='Thời gian', ylabel='Doanh thu', show_value=True, fmt=None):
     fig, ax = plt.subplots(figsize=(10, 6), dpi=100)
     ax.plot(x_col, y_col, marker='o', linestyle='-', color='#ff7f0e', linewidth=2)
     
@@ -123,7 +123,7 @@ def line_chart(x_col, y_col, title='Line chart', xlabel='Thời gian', ylabel='G
     ax.set_ylabel(ylabel)
     ax.set_title(title)
     ax.grid(axis='y', linestyle='--', alpha=0.8)
-    ax.tick_params(axis='x', rotation=45)
+    ax.tick_params(axis='x', rotation=90)
     ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda x, pos: smart_format(x)))
     
     if show_value:
