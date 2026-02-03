@@ -19,28 +19,34 @@ st.set_page_config(
 
 st.markdown("""
     <style>
-    /* 1. Ẩn menu 3 gạch và nút GitHub/Deploy */
+    /* 1. Ẩn menu chính (3 gạch) và các nút Toolbar (GitHub, Deploy) */
     #MainMenu {visibility: hidden;}
-    header[data-testid="stHeader"] {
-        background-color: rgba(0,0,0,0); /* Làm trong suốt header */
-        height: 0px; /* Thu nhỏ độ cao để không đè lên nội dung */
-    }
+    header {visibility: hidden;}
     
-    /* 2. Ẩn các icon bên phải của header nhưng GIỮ lại vùng chứa nút bên trái */
+    /* 2. Ẩn nút "Manage app" và các icon phía góc phải */
     [data-testid="stHeaderActionElements"] {
-        visibility: hidden;
+        display: none !important;
     }
 
-    /* 3. ĐÂY LÀ PHẦN QUAN TRỌNG: Cấu hình cho nút hiện lại sidebar */
-    /* Khi sidebar đóng, nút này nằm trong một div riêng, ta phải ép nó hiện lên */
-    [data-testid="sidebar-collapsed-control"] {
+    /* 3. HIỆN LẠI nút mở Sidebar (quan trọng) */
+    /* Streamlit thay đổi class này liên tục, chúng ta nhắm vào nút có aria-label */
+    button[aria-label="Open sidebar"] {
         visibility: visible !important;
         display: flex !important;
-        top: 10px; /* Điều chỉnh vị trí nút để không bị lệch */
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 999999;
+        color: #31333F; /* Hoặc màu tùy chọn để dễ thấy */
     }
 
-    /* 4. Ẩn footer */
+    /* 4. Ẩn footer 'Made with Streamlit' */
     footer {visibility: hidden;}
+    
+    /* 5. Loại bỏ khoảng trắng dư thừa do header bị ẩn */
+    .block-container {
+        padding-top: 2rem;
+    }
     </style>
     """, unsafe_allow_html=True)
 # Neu khong co du lieu thi se o trang loading
