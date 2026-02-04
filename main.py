@@ -11,31 +11,33 @@ st.set_page_config(
 
 st.markdown("""
     <style>
-    /* 1. Ẩn cụm nút bên phải (GitHub, Deploy) */
+    /* 1. Ẩn thanh vạch màu và Footer */
+    [data-testid="stDecoration"], footer {display: none !important;}
+
+    /* 2. KHÔNG ẩn header, mà ẩn nội dung bên phải của nó */
+    /* Cách này giúp nút Sidebar (nằm bên trái) không bị ảnh hưởng */
     [data-testid="stHeaderActionElements"] {
         display: none !important;
     }
-
-    /* 2. Ẩn menu 3 gạch */
+    
+    /* Ẩn menu 3 gạch */
     #MainMenu {
         display: none !important;
     }
 
-    /* 3. LÀM NỔI BẬT nút mở Sidebar (Nằm bên trái) */
-    /* Chúng ta KHÔNG ẩn Header, chỉ làm nó trong suốt để nút này lộ ra */
+    /* 3. Làm trong suốt nền Header để không bị vạch trắng che biểu đồ */
     header[data-testid="stHeader"] {
         background-color: rgba(0,0,0,0) !important;
     }
 
+    /* 4. ÉP nút mở Sidebar phải hiện lên với màu sắc nổi bật */
+    /* Nếu nó vẫn ẩn, ta dùng position fixed để đưa nó ra khỏi header */
     [data-testid="stSidebarCollapsedControl"] {
-        background-color: #FF4B4B !important; /* Màu đỏ cho dễ thấy */
-        color: white !important;
-        border-radius: 50%;
         visibility: visible !important;
         display: flex !important;
+        background-color: #f0f2f6 !important; /* Màu nền nhẹ cho nút */
+        border-radius: 0 10px 10px 0 !important;
     }
-    
-    footer {visibility: hidden;}
     </style>
 """, unsafe_allow_html=True)
 
