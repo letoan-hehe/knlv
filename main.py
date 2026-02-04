@@ -11,31 +11,28 @@ st.set_page_config(
 
 st.markdown("""
     <style>
-    /* Ẩn thanh trang trí cầu vồng ở trên cùng */
-    [data-testid="stDecoration"] {display: none !important;}
-
-    /* Ẩn nút Deploy, nút GitHub và Menu 3 gạch */
-    header[data-testid="stHeader"] [data-testid="stHeaderActionElements"], 
-    #MainMenu {
+    /* 1. Nhắm thẳng vào cụm Toolbar bên phải của Header */
+    header div[data-testid="stHeaderActionElements"], 
+    header .stAppDeployButton,
+    [data-testid="stToolbar"] {
         display: none !important;
-        visibility: hidden !important;
     }
 
-    /* Quan trọng: Vẫn phải giữ Header nhưng làm trong suốt để NÚT SIDEBAR không bị mất */
-    header[data-testid="stHeader"] {
-        background-color: rgba(0,0,0,0) !important;
-        color: transparent !important;
+    /* 2. Ẩn menu 3 gạch bằng cách tìm nút có aria-expanded */
+    button[aria-label="Manage app"], 
+    button[id="MainMenu"] {
+        display: none !important;
     }
 
-    /* Đảm bảo nút mở Sidebar luôn hiện rõ để người dùng bấm được */
-    button[aria-label="Open sidebar"] {
-        visibility: visible !important;
-        display: flex !important;
-        color: #31333F !important; /* Đổi màu nút để nó không bị trong suốt theo header */
+    /* 3. QUAN TRỌNG: Hiện lại nút Sidebar nhưng dời nó ra khỏi Header */
+    /* Nếu ẩn header mà không dời nút này, nó sẽ bị mất tương tác */
+    [data-testid="stSidebarCollapsedControl"] {
+        background-color: #f0f2f6;
+        border-radius: 0 10px 10px 0;
+        left: 0;
+        position: fixed;
+        z-index: 1000001;
     }
-
-    /* Ẩn Footer 'Made with Streamlit' */
-    footer {visibility: hidden !important;}
     </style>
 """, unsafe_allow_html=True)
 
