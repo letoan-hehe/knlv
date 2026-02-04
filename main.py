@@ -10,28 +10,30 @@ st.set_page_config(
 
 st.markdown("""
     <style>
-    /* 1. Ẩn toàn bộ thanh Header (chứa nút GitHub và Source) */
-    header[data-testid="stHeader"] {
-        visibility: hidden !important;
-        height: 0 !important;
-    }
-
-    /* 2. Ẩn Footer và vạch màu trang trí */
+    /* 1. Ẩn Footer và vạch màu trang trí phía trên cùng */
     footer {visibility: hidden !important;}
     [data-testid="stDecoration"] {display: none !important;}
 
-    /* 3. Lôi nút mở Sidebar ra ngoài và ép nó phải hiện */
-    /* Chúng ta đặt nó cố định ở góc trái màn hình */
+    /* 2. CHỈ ẩn cụm nút bên phải (GitHub, Deploy, 3 gạch) */
+    /* Chúng ta nhắm vào container chứa các nút này */
+    [data-testid="stHeaderActionElements"], 
+    header button[aria-label="Manage app"],
+    header button[id="MainMenu"] {
+        display: none !important;
+    }
+
+    /* 3. LÀM TRONG SUỐT Header để nó không che biểu đồ */
+    /* Nhưng vẫn phải để nó 'tồn tại' để nút Sidebar (bên trái) có chỗ bám */
+    header[data-testid="stHeader"] {
+        background-color: rgba(0,0,0,0) !important;
+        border: none !important;
+    }
+
+    /* 4. ĐẢM BẢO nút Sidebar luôn hiện rõ và có thể bấm được */
     [data-testid="stSidebarCollapsedControl"] {
         visibility: visible !important;
         display: flex !important;
-        position: fixed !important;
-        top: 15px !important;
-        left: 15px !important;
-        z-index: 999999 !important;
-        background-color: #f0f2f6 !important;
-        border: 1px solid #d1d5db !important;
-        border-radius: 4px !important;
+        color: #31333F !important; /* Màu tối để nổi bật trên nền trắng */
     }
     </style>
 """, unsafe_allow_html=True)
