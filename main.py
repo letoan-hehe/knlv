@@ -11,36 +11,31 @@ st.set_page_config(
 
 st.markdown("""
     <style>
-    /* 1. Ẩn Footer và thanh trang trí màu mè */
-    footer {visibility: hidden !important;}
-    [data-testid="stDecoration"] {display: none !important;}
-
-    /* 2. Ẩn các nút bên phải Header (GitHub, Deploy) */
+    /* 1. Ẩn cụm nút bên phải (GitHub, Deploy) */
     [data-testid="stHeaderActionElements"] {
         display: none !important;
     }
 
-    /* 3. Ẩn menu 3 gạch nhưng KHÔNG ẩn toàn bộ Header */
+    /* 2. Ẩn menu 3 gạch */
     #MainMenu {
         display: none !important;
     }
 
-    /* 4. ĐẶC BIỆT: Ép nút mở Sidebar phải hiện lên và có màu để dễ thấy */
-    /* Chúng ta nhắm vào cả 2 loại ID mà Streamlit thường dùng cho nút này */
-    [data-testid="stSidebarCollapsedControl"], 
-    button[aria-label="Open sidebar"] {
-        visibility: visible !important;
-        display: flex !important;
-        left: 10px !important;
-        top: 10px !important;
-        z-index: 1000000 !important;
-        color: #FF4B4B !important; /* Màu đỏ Streamlit cho nổi bật */
-    }
-
-    /* 5. Làm trong suốt nền Header để không bị vạch trắng che nội dung */
+    /* 3. LÀM NỔI BẬT nút mở Sidebar (Nằm bên trái) */
+    /* Chúng ta KHÔNG ẩn Header, chỉ làm nó trong suốt để nút này lộ ra */
     header[data-testid="stHeader"] {
         background-color: rgba(0,0,0,0) !important;
     }
+
+    [data-testid="stSidebarCollapsedControl"] {
+        background-color: #FF4B4B !important; /* Màu đỏ cho dễ thấy */
+        color: white !important;
+        border-radius: 50%;
+        visibility: visible !important;
+        display: flex !important;
+    }
+    
+    footer {visibility: hidden;}
     </style>
 """, unsafe_allow_html=True)
 
