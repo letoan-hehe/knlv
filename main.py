@@ -10,28 +10,29 @@ st.set_page_config(
 
 st.markdown("""
     <style>
-    /* 1. Ẩn nút Fullscreen trên các biểu đồ và bảng để ngăn lộ source */
-    [data-testid="StyledFullScreenButton"] {
-        display: none !important;
+    /* 1. Ẩn toàn bộ thanh Header (chứa nút GitHub và Source) */
+    header[data-testid="stHeader"] {
+        visibility: hidden !important;
+        height: 0 !important;
     }
 
-    /* 2. Ẩn Toolbar và các nút Action Elements */
-    [data-testid="stHeaderActionElements"], #MainMenu {
-        display: none !important;
-    }
-
-    /* 3. Giữ nút Sidebar luôn hiện rõ ở vị trí cố định */
-    [data-testid="stSidebarCollapsedControl"] {
-        display: flex !important;
-        visibility: visible !important;
-        position: fixed !important;
-        top: 10px !important;
-        left: 10px !important;
-        z-index: 999999 !important;
-    }
-
-    /* 4. Ẩn Footer */
+    /* 2. Ẩn Footer và vạch màu trang trí */
     footer {visibility: hidden !important;}
+    [data-testid="stDecoration"] {display: none !important;}
+
+    /* 3. Lôi nút mở Sidebar ra ngoài và ép nó phải hiện */
+    /* Chúng ta đặt nó cố định ở góc trái màn hình */
+    [data-testid="stSidebarCollapsedControl"] {
+        visibility: visible !important;
+        display: flex !important;
+        position: fixed !important;
+        top: 15px !important;
+        left: 15px !important;
+        z-index: 999999 !important;
+        background-color: #f0f2f6 !important;
+        border: 1px solid #d1d5db !important;
+        border-radius: 4px !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
