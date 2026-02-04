@@ -11,11 +11,21 @@ st.set_page_config(
 
 st.markdown("""
     <style>
-    #MainMenu {visibility: hidden;}
+    /* 1. Chỉ ẩn Footer 'Made with Streamlit' */
     footer {visibility: hidden;}
-    header {visibility: hidden;}
+
+    /* 2. Làm trong suốt Header để giao diện thoáng hơn */
+    header[data-testid="stHeader"] {
+        background-color: rgba(0,0,0,0) !important;
+    }
+
+    /* 3. Đảm bảo nút mở Sidebar luôn hiển thị rõ ràng */
+    [data-testid="stSidebarCollapsedControl"] {
+        visibility: visible !important;
+        display: block !important;
+    }
     </style>
-    """, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
 # Neu khong co du lieu thi se o trang loading
 if 'df_dulieu' not in st.session_state:
