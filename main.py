@@ -5,8 +5,7 @@ import cauhinh
 # Cau hinh trang
 st.set_page_config(
     page_title= 'Data Analysis Tool',
-    layout= 'wide',
-    initial_sidebar_state= 'auto'
+    layout= 'wide'
 )
 
 st.markdown("""
