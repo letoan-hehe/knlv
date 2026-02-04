@@ -11,27 +11,35 @@ st.set_page_config(
 
 st.markdown("""
     <style>
-    /* 1. Nhắm thẳng vào cụm Toolbar bên phải của Header */
-    header div[data-testid="stHeaderActionElements"], 
-    header .stAppDeployButton,
-    [data-testid="stToolbar"] {
+    /* 1. Ẩn Footer và thanh trang trí màu mè */
+    footer {visibility: hidden !important;}
+    [data-testid="stDecoration"] {display: none !important;}
+
+    /* 2. Ẩn các nút bên phải Header (GitHub, Deploy) */
+    [data-testid="stHeaderActionElements"] {
         display: none !important;
     }
 
-    /* 2. Ẩn menu 3 gạch bằng cách tìm nút có aria-expanded */
-    button[aria-label="Manage app"], 
-    button[id="MainMenu"] {
+    /* 3. Ẩn menu 3 gạch nhưng KHÔNG ẩn toàn bộ Header */
+    #MainMenu {
         display: none !important;
     }
 
-    /* 3. QUAN TRỌNG: Hiện lại nút Sidebar nhưng dời nó ra khỏi Header */
-    /* Nếu ẩn header mà không dời nút này, nó sẽ bị mất tương tác */
-    [data-testid="stSidebarCollapsedControl"] {
-        background-color: #f0f2f6;
-        border-radius: 0 10px 10px 0;
-        left: 0;
-        position: fixed;
-        z-index: 1000001;
+    /* 4. ĐẶC BIỆT: Ép nút mở Sidebar phải hiện lên và có màu để dễ thấy */
+    /* Chúng ta nhắm vào cả 2 loại ID mà Streamlit thường dùng cho nút này */
+    [data-testid="stSidebarCollapsedControl"], 
+    button[aria-label="Open sidebar"] {
+        visibility: visible !important;
+        display: flex !important;
+        left: 10px !important;
+        top: 10px !important;
+        z-index: 1000000 !important;
+        color: #FF4B4B !important; /* Màu đỏ Streamlit cho nổi bật */
+    }
+
+    /* 5. Làm trong suốt nền Header để không bị vạch trắng che nội dung */
+    header[data-testid="stHeader"] {
+        background-color: rgba(0,0,0,0) !important;
     }
     </style>
 """, unsafe_allow_html=True)
