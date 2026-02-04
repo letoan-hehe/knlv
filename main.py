@@ -10,24 +10,28 @@ st.set_page_config(
 
 st.markdown("""
     <style>
-    /* Ẩn các nút bên phải và menu 3 gạch */
+    /* 1. Ẩn nút Fullscreen trên các biểu đồ và bảng để ngăn lộ source */
+    [data-testid="StyledFullScreenButton"] {
+        display: none !important;
+    }
+
+    /* 2. Ẩn Toolbar và các nút Action Elements */
     [data-testid="stHeaderActionElements"], #MainMenu {
         display: none !important;
     }
 
-    /* Giữ header trong suốt để nút mở Sidebar (bên trái) có chỗ đứng */
-    header[data-testid="stHeader"] {
-        background-color: transparent !important;
+    /* 3. Giữ nút Sidebar luôn hiện rõ ở vị trí cố định */
+    [data-testid="stSidebarCollapsedControl"] {
+        display: flex !important;
+        visibility: visible !important;
+        position: fixed !important;
+        top: 10px !important;
+        left: 10px !important;
+        z-index: 999999 !important;
     }
 
-    /* Đảm bảo nút Sidebar luôn hiện rõ */
-    [data-testid="stSidebarCollapsedControl"] {
-        visibility: visible !important;
-        display: flex !important;
-        color: #FF4B4B !important;
-    }
-    
-    footer {visibility: hidden;}
+    /* 4. Ẩn Footer */
+    footer {visibility: hidden !important;}
     </style>
 """, unsafe_allow_html=True)
 
