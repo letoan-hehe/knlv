@@ -11,18 +11,30 @@ st.set_page_config(
 
 st.markdown("""
     <style>
-    /* 1. Chỉ ẩn Footer 'Made with Streamlit' */
-    footer {visibility: hidden;}
+    /* 1. Ẩn thanh vạch màu trên cùng và Footer */
+    [data-testid="stDecoration"], footer {display: none !important;}
 
-    /* 2. Làm trong suốt Header để giao diện thoáng hơn */
+    /* 2. Ẩn sạch Toolbar bên phải (nút GitHub, Deploy, 3 gạch) */
+    [data-testid="stHeaderActionElements"], #MainMenu {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    /* 3. Làm trong suốt Header để đẩy nội dung lên cao */
     header[data-testid="stHeader"] {
         background-color: rgba(0,0,0,0) !important;
     }
 
-    /* 3. Đảm bảo nút mở Sidebar luôn hiển thị rõ ràng */
-    [data-testid="stSidebarCollapsedControl"] {
+    /* 4. HIỆN LẠI nút Sidebar (Cực kỳ quan trọng để app không bị đơ) */
+    [data-testid="stSidebarCollapsedControl"], button[aria-label="Open sidebar"] {
         visibility: visible !important;
-        display: block !important;
+        display: flex !important;
+        color: #31333F !important; /* Màu tối để dễ thấy trên nền sáng */
+    }
+
+    /* 5. Tinh chỉnh khoảng cách nội dung */
+    .block-container {
+        padding-top: 1rem;
     }
     </style>
 """, unsafe_allow_html=True)
