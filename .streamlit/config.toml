@@ -1,0 +1,9 @@
+[client]
+# Chế độ "minimal" sẽ ẩn nút GitHub, nút Deploy và menu thừa
+# nhưng vẫn giữ lại các nút điều hướng cần thiết.
+toolbarMode = "minimal"
+
+[browser]
+# Tự động gom nhóm các thành phần khi xem trên điện thoại.
+gatherUsageStats = false
+
