@@ -11,31 +11,31 @@ st.set_page_config(
 
 st.markdown("""
     <style>
-    /* 1. Ẩn thanh vạch màu trên cùng và Footer */
-    [data-testid="stDecoration"], footer {display: none !important;}
+    /* Ẩn thanh trang trí cầu vồng ở trên cùng */
+    [data-testid="stDecoration"] {display: none !important;}
 
-    /* 2. Ẩn sạch Toolbar bên phải (nút GitHub, Deploy, 3 gạch) */
-    [data-testid="stHeaderActionElements"], #MainMenu {
+    /* Ẩn nút Deploy, nút GitHub và Menu 3 gạch */
+    header[data-testid="stHeader"] [data-testid="stHeaderActionElements"], 
+    #MainMenu {
         display: none !important;
         visibility: hidden !important;
     }
 
-    /* 3. Làm trong suốt Header để đẩy nội dung lên cao */
+    /* Quan trọng: Vẫn phải giữ Header nhưng làm trong suốt để NÚT SIDEBAR không bị mất */
     header[data-testid="stHeader"] {
         background-color: rgba(0,0,0,0) !important;
+        color: transparent !important;
     }
 
-    /* 4. HIỆN LẠI nút Sidebar (Cực kỳ quan trọng để app không bị đơ) */
-    [data-testid="stSidebarCollapsedControl"], button[aria-label="Open sidebar"] {
+    /* Đảm bảo nút mở Sidebar luôn hiện rõ để người dùng bấm được */
+    button[aria-label="Open sidebar"] {
         visibility: visible !important;
         display: flex !important;
-        color: #31333F !important; /* Màu tối để dễ thấy trên nền sáng */
+        color: #31333F !important; /* Đổi màu nút để nó không bị trong suốt theo header */
     }
 
-    /* 5. Tinh chỉnh khoảng cách nội dung */
-    .block-container {
-        padding-top: 1rem;
-    }
+    /* Ẩn Footer 'Made with Streamlit' */
+    footer {visibility: hidden !important;}
     </style>
 """, unsafe_allow_html=True)
 
